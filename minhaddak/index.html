@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minhaddak - Find Your Career Path</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <script>
+        fetch('header.html')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('site-header').innerHTML = html;
+            // Load Google Translate script dynamically
+            const gtScript = document.createElement('script');
+            gtScript.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+            document.body.appendChild(gtScript);
+        });
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,fr,ar',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+
+            // Style dropdown once it exists
+            function styleDropdown() {
+                const select = document.querySelector('#google_translate_element select.goog-te-combo');
+                if(select){
+                    select.style.padding = "5px";
+                    select.style.borderRadius = "5px";
+                    select.style.border = "1px solid #ccc";
+                    select.style.fontSize = "14px";
+                } else {
+                    setTimeout(styleDropdown, 500); // retry after delay
+                }
+            }
+            styleDropdown();
+        }
+    </script>
+
+
+    <div class="client-pro-container">
+        <button class="client-pro active">Find someone</button>
+        <button class="client-pro">Pro (Artisan)</button>
+    </div>
+    <script src="script.js"></script>
+
+    <div class="body_search">
+        <div>
+            <p style="font-size: 80%; padding-left: 3%; font-size:90%;">The easiest way to find a nearby professional in Lebanon.</p>
+        </div>
+        <div>
+            <p2 style="font-size: 80%; padding-left: 3%; font-size:90%;">Your Location</p2>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+            <!-- Input -->
+            <input id="locationInput" type="text" style="height: 30px; width: 90%; border-radius: 5px; font-size:90%; border: solid 1px rgb(138,177,228);" placeholder="Enter location (e.g., Kaslik, Achrafieh)" autocomplete="off" />
+            <!-- Autofill button --> 
+            <button id="autoLocationBtn" style="width: 40px; height: 30px; border: 1px solid #000; background-color: white; border-radius: 5px; border: solid 1px rgb(138, 177, 228);font-size: 16px; cursor: pointer; box-shadow: 3px 3px 10px rgba(0,0,0,0.4); position: relative; overflow: hidden;">
+                <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
+                    <source src="img/Location Icon Animation.mp4" type="video/mp4">
+                </video>
+            </button>
+            <script>
+                document.getElementById("autoLocationBtn").addEventListener("click", () => {
+                    if (!navigator.geolocation) {
+                        alert("Geolocation is not supported by your browser");
+                        return;
+                    }
+
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+
+                            // Optional: save globally
+                            window.selectedLocation = { lat, lon, name: "" };
+
+                            // Reverse geocode using OpenStreetMap Nominatim API
+                            try {
+                                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                                const data = await res.json();
+                                const city = data.address.city || data.address.town || data.address.village || data.display_name;
+
+                                // Fill input with city/location
+                                const input = document.getElementById("locationInput");
+                                input.value = city;
+
+                                // Save name in global variable
+                                window.selectedLocation.name = city;
+                                console.log("User location autofilled:", window.selectedLocation);
+                            } catch (err) {
+                                console.error("Reverse geocoding failed:", err);
+                                alert("Could not get location name");
+                            }
+                        },
+                        (error) => {
+                            console.error("Geolocation error:", error);
+                            alert("Unable to retrieve your location");
+                        }
+                    );
+                });
+            </script>
+
+            <!-- relocate lat and lon-->
+
+        </div>
+            <div id="autocomplete" style="position: relative; background:white; color:black; border:1px solid #ccc; width:100%; max-height:150px; overflow-y:auto; display:none; border-radius:5px;"></div>
+            <script>
+                const input = document.getElementById("locationInput");
+                const listBox = document.getElementById("autocomplete");
+
+                let timer = null;
+
+                input.addEventListener("input", () => {
+                    clearTimeout(timer);
+
+                    const q = input.value.trim();
+                    if(q.length < 2){
+                        listBox.style.display = "none";
+                        return;
+                    }
+
+                    timer = setTimeout(() => {
+                        fetch("https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=" + encodeURIComponent(q))
+                        .then(r => r.json())
+                        .then(data => {
+                            if(data.length === 0){
+                                listBox.style.display = "none";
+                                return;
+                            }
+
+                            listBox.innerHTML = "";
+                            data.forEach(place => {
+                                const div = document.createElement("div");
+                                div.style.padding = "8px";
+                                div.style.cursor = "pointer";
+                                div.innerText = place.display_name;
+                                
+                                div.onclick = () => {
+                                    input.value = place.display_name;
+                                    listBox.style.display = "none";
+
+                                    window.selectedLocation = {
+                                        name: place.display_name,
+                                        lat: place.lat,
+                                        lon: place.lon,
+                                        profession: null
+                                    };
+
+                                    console.log("Selected location saved:", window.selectedLocation);
+                                }
+
+                                listBox.appendChild(div);
+                            });
+
+                            listBox.style.display = "block";
+                        });
+                    }, 400);
+                });
+
+                // hide suggestions when clicking outside
+                document.addEventListener("click", (e) => {
+                    if(e.target !== input) listBox.style.display = "none";
+                });
+            </script>
+
+            <div>
+                <p2 style="font-size: 80%; padding-left: 3%; font-size:90%;">Choose Profession</p2>
+            </div>
+            <div style="width: 100%; display: flex; justify-content: space-between; justify-self: center; gap:10px; flex-wrap: wrap; ">
+                <style>
+                    .toggle-btn {
+                        display: flex;
+                        justify-content: flex-start; /* pushes content to bottom */
+                        flex-direction:column-reverse;
+                        align-items: center;       /* centers text horizontally */
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        user-select: none;
+                        background-color: white;
+                        transition: 0.2s;
+                        width: 31%;
+                        aspect-ratio: 1 / 1;
+                        text-align: center;
+                    }
+
+                    /* Checked state */
+                    .toggle-btn.checked {
+                        transform: scale(1.10);
+                        --border-angle: 0deg;
+                        justify-content: center;
+                        align-items: center;
+                        box-shadow: 0px 2px 4px hsl(0 0% 0% / 25%);
+                        animation: border-angle-rotate 2s infinite linear;
+                        border: 0.5rem solid transparent;
+                        position: relative;
+                        background: linear-gradient(white, white) padding-box,
+                        conic-gradient(
+                            from var(--border-angle),
+                            var(--bg) 50%,
+                            white
+                            )
+                            border-box
+                    }
+
+                    /* Hover effect */
+                    .toggle-btn:hover {
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                        transform: scale(1.10);
+                    }
+                    .box {
+                        --border-angle: 0deg;
+                        border-radius: 12px;
+                        width: 100px;
+                        height: 100px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        box-shadow: 0px 2px 4px hsl(0 0% 0% / 25%);
+                        animation: border-angle-rotate 2s infinite linear;
+                        border: 0.5rem solid transparent;
+                        position: relative;
+                    }
+
+                    @keyframes border-angle-rotate {
+                        from { --border-angle: 0deg; }
+                        to { --border-angle: 360deg; }
+                    }
+
+                    /** boilerplate **/
+                    body {
+                        --bg: hsl(190deg 20% 10%);                    
+                    }
+                    @property --border-angle {
+                        syntax: "<angle>";
+                        initial-value: 0deg;
+                        inherits: false;
+                    }
+                    
+                    .toggle-btn p {
+                        margin: 0;
+                    }
+
+                </style>
+
+                <div style="display:contents; gap: 10px; font-size: 85%; justify-items: center;">
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">personal-trainerTrade<img style="width: 110%; height: 100%; border-radius: 5px;" src="stock_images/personal_trainer_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">nail-technicianTrade<img style="width: 110%; height: 100%; border-radius: 5px;" src="stock_images/nail_technician_new.jpg" alt="Mn"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Home Hairdresser<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/hairdresser_new2.jpg" alt="Hr"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Plumber<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/plumber_new.jpg" alt="plumb"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Electrician<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/electrician_cables_w_1a805f5a.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Carpenter<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/carpenter_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Tiler/Flooring installer <img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/tiler_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Cleaning Agent<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/cleaning_agent_mop_c_af42e612.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Plasterer/Painter<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/painter_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Locksmith<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/locksmith_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Mechanic<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/mechanic_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Glazier<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/glazier_glass_window_c76cf743.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">HVAC/Refrigeration Technician<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/hvac_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Blacksmith/Welder<img style="width: 110%; height: 100%;" src="stock_images/welder_new2.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Appliance Repair Technician<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/appliance_new.jpg" alt="pt"></div>
+                    <div class="toggle-btn" style="box-shadow: 3px 3px 10px rgba(0,0,0,0.4);">Gardener<img style="width: 110%; height: 100%;border-radius: 5px;" src="stock_images/gardener_new.jpg" alt="pt"></div>
+                </div>
+    
+                <script>
+                    const toggles = document.querySelectorAll('.toggle-btn');
+
+                    toggles.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            // First, remove 'checked' from all buttons
+                            toggles.forEach(b => b.classList.remove('checked'));
+                            // Then, add 'checked' to the clicked button
+                            btn.classList.add('checked');
+                            window.selectedLocation.profession = btn.textContent.trim();
+                            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+                        });
+                    });
+                </script>
+            </div>
+
+        <!-- Results Modal -->
+        <div id="resultsModal" style="
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        ">
+            <div style="
+                background: #fff;
+                max-width: 600px;
+                width: 90%;
+                max-height: 80%;
+                overflow-y: auto;
+                border-radius: 12px;
+                padding: 20px;
+                position: relative;
+            ">
+                <span id="closeResultsModal" style="
+                    position: absolute;
+                    top: 10px;
+                    right: 15px;
+                    font-size: 24px;
+                    cursor: pointer;
+                ">&times;</span>
+
+                <h2 style="color:#0b1d3a;">Search Results</h2>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+
+        <div style="display: flex; margin-top:2%; padding-bottom: 2%; width: 100%; justify-content: center; ">
+            <style>
+                .search_art_btn:hover {
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    transform: scale(1.05);
+                }
+                .search_art_btn:active {
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    transform: scale(1.05);
+                }
+            </style>
+            <button class="search_art_btn" style="width: 90%; height: 35px; color: black; background-color: rgb(220, 230, 243); border:none; border-radius: 5px; margin: 0 auto; justify-self: center;">Search Artisans</button>
+        </div>
+    </div>
+    <script>
+        function normalizeText(str) {
+            return str.toLowerCase().trim().replace(/\s+/g, " ");
+        }
+
+        document.querySelector(".search_art_btn").addEventListener("click", async () => {
+            if (!window.selectedLocation || !window.selectedLocation.profession || !window.selectedLocation.name) {
+                alert("Please select location and profession");
+                return;
+            }
+
+            const location = window.selectedLocation.name;
+            const profession = window.selectedLocation.profession.trim().toLowerCase();
+
+            const url = `https://script.google.com/macros/s/AKfycbyqq7yaXez8unYmgbNDbQsS7qN3NHWT0MNDN-crSlVr34k4wAL5oC27qKnPiyMdbF64/exec?location=${encodeURIComponent(location)}`;
+            const res = await fetch(url);
+            let data = await res.json();
+
+            // FILTER results by profession
+            data = data.filter(p => p.Profession && p.Profession.trim().toLowerCase() === profession);
+            console.log("Filtered Results:", data);
+            renderResults(data);
+        });
+        
+        function renderResults(pros) {
+            const modal = document.getElementById("resultsModal");
+            const container = document.getElementById("resultsContainer");
+            container.innerHTML = "";
+
+            if (!pros.length) {
+                container.innerHTML = "<p>No professionals found.</p>";
+            } else {
+                pros.forEach(p => {
+                    const card = document.createElement("div");
+                    card.style.border = "1px solid #ccc";
+                    card.style.borderRadius = "8px";
+                    card.style.padding = "12px";
+                    card.style.marginBottom = "10px";
+                    card.style.cursor = "pointer";
+                    card.style.background = "#f9f9f9";
+
+                    card.innerHTML = `
+                        <strong>${p.Name}</strong><br>
+                        ${p.Profession}<br>
+                        📍 ${p.Location}
+                    `;
+
+                    card.addEventListener("click", () => {
+                        localStorage.setItem("selectedProfessional", JSON.stringify(p));
+                        window.location.href = "professional.html"; // or open profile in another modal
+                    });
+
+                    container.appendChild(card);
+                });
+            }
+
+            // Show modal
+            modal.style.display = "flex";
+            modal.style.justifyContent = "center";
+            modal.style.alignItems = "center";
+        }
+
+        // Close modal
+        document.getElementById("closeResultsModal").addEventListener("click", () => {
+            document.getElementById("resultsModal").style.display = "none";
+        });
+    </script>
+
+    <div>
+        <style>
+            .site-footer {
+            width: 100%;
+            background-color: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 20px 0;
+            font-size: 14px;
+            }
+
+            .footer-content {
+            text-align: center;
+            color: #333;
+            }
+
+            .footer-content a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 5px;
+            }
+
+            .footer-content a:hover {
+            text-decoration: underline;
+            }
+        </style>
+        <footer class="site-footer">
+            <div class="footer-content">
+                © 2025 MinHaddak. All rights reserved. |
+                <a href="privacy.html">Privacy Policy</a> |
+                <a href="ToU.html">Terms of Use</a> |
+                <a href="#">Contact us</a>
+            </div>
+        </footer>
+
+    </div>
+</body>
+</html>

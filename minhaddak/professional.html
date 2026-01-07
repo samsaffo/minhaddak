@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Profile - MinHaddak</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .profile-header {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .profile-header img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0b1d3a;
+    }
+
+    .profile-info h2 {
+      margin: 0;
+      font-size: 28px;
+      color: #0b1d3a;
+    }
+
+    .profile-info p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+
+    .profile-info a {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #0b1d3a;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: 0.2s;
+    }
+
+    .profile-info a:hover {
+      background: #3a4b75;
+    }
+
+    .about-section {
+      margin-top: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .additional-images {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .additional-images img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .close-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #888;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #555;
+    }
+
+    @media(max-width: 600px){
+      .profile-header {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .profile-header img {
+        width: 120px;
+        height: 120px;
+      }
+
+      .additional-images img {
+        width: 80px;
+        height: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="profileContainer">
+    <!-- Profile content will be inserted here -->
+  </div>
+
+  <script src="professional.js"></script>
+</body>
+</html>

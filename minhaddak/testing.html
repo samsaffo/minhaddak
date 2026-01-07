@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register & Users</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background: #f7f7f7;
+    padding-top: 50px;
+}
+.box{
+    width: 350px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+h2{
+    text-align: center;
+    margin-bottom: 20px;
+}
+input{
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 14px;
+    border-radius: 7px;
+    border: 1px solid #aaa;
+    font-size: 16px;
+}
+button{
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    border: none;
+    border-radius: 7px;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+button:hover{
+    background: #005dc9;
+}
+#userList div{
+    margin-bottom: 8px;
+    padding: 8px;
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Create Account</h2>
+
+    <input id="name" placeholder="Name">
+    <input id="phone" placeholder="Phone">
+    <input id="email" placeholder="Email">
+    <input id="password" placeholder="Password" type="password">
+
+    <button onclick="registerUser()">Register</button>
+    <button onclick="loadUsers()">Load Users</button>
+
+    <div id="userList"></div>
+</div>
+
+<script>
+const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFxu-CUfNmOuWvzf7akHO30iEjJucXKrkzfoN_ul6-LmuZt2eWdejCjiA_j1Coc88o/exec"; // Replace with deployed web app URL
+
+// Register / Update User
+async function registerUser() {
+    const data = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+    };
+
+    try {
+        let res = await fetch(APP_SCRIPT_URL, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+
+        let result = await res.json();
+        alert(result.status === "ok" ? "Saved!" : "Error: " + result.message);
+    } catch(err) {
+        alert("Fetch error: " + err.message);
+    }
+}
+
+// Load all users
+async function loadUsers() {
+    try {
+        let res = await fetch(APP_SCRIPT_URL);
+        let users = await res.json();
+
+        const container = document.getElementById("userList");
+        container.innerHTML = "";
+
+        users.forEach(user => {
+            const div = document.createElement("div");
+            div.textContent = `Name: ${user.Name}, Phone: ${user.Phone}, Email: ${user.Email}`;
+            container.appendChild(div);
+        });
+    } catch(err) {
+        alert("Error loading users: " + err.message);
+    }
+}
+</script>
+
+</body>
+</html>

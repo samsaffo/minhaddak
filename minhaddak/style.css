@@ -1,0 +1,305 @@
+/* General Styles */
+body {
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+    margin: 0%;
+    display: flex;
+    justify-content:space-between;
+    flex-direction: column;
+    gap: 20PX;
+    background-color: rgb(225, 233, 238);
+}
+
+/* Square Containers */
+.header {
+    width: 100%;
+    height: 230px;
+    background-size: cover;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    transition: background-image 1s ease-in-out;
+}
+
+.header_style{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.logo{
+    width: 80px;
+    height: auto;
+    border-radius: 50px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.4);
+}
+.install-btn{
+    width: 140px;
+    height: 50px;
+    line-height: 50px;
+    color: black;
+    background-color:  rgb(220, 230, 243);   
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3); 
+}
+.install-btn:hover {
+    background-color: #d3d3d3; 
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+    transition: all 0.3s ease; 
+    background: lightslategray;
+}
+
+.client-pro-container {
+    display: flex;
+    width: 80%;
+    height: 35px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: rgb(220, 230, 243);
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+    border: 1px solid #ccc;
+    justify-content: center;
+    justify-items: center;
+}
+
+.client-pro {
+  width: 50%;
+  height: 90%;
+  margin: auto;
+  border: none;;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: rgb(220, 230, 243);
+  color: #333;
+  font-weight: bold;
+  transition: background 0.3s, color 0.3s;
+}
+
+.client-pro.active {
+  background-color: #fff;  /* selected highlight */
+  color: #000;
+}
+.client-pro:hover {
+    background-color: #d3d3d3; 
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+    transform: scale(1.10);
+    transition: all 0.3s ease; 
+    background: lightslategray;
+}
+
+.body_search{
+    display: flex;
+    width: 80%;
+    margin: 0 auto;
+    flex-direction: column;
+    gap: 10px;
+    border: rgb(220, 230, 243) 1px solid;
+    border-radius: 8px;
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+    background-color: whitesmoke;
+}
+
+/* dropdown menu */
+
+* { 
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+h2{
+    
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: lighter;
+    color: #2C3D4F;
+}
+
+nav {
+    text-align: center;
+}
+
+nav ul {
+    
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    background-color: rgb(220, 230, 243);
+    border-radius: 6px;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+nav ul li {
+    
+    float: left;
+    width: 140px;
+    height: 50px;
+    line-height: 50px;
+    position: relative;
+    font-size: 15px;
+    color: black;
+    cursor: pointer;
+    font-family: monospace;
+    font-weight: lighter;
+    border-radius: 2%;
+
+}
+
+nav ul li:hover {
+    
+    background: lightslategray;
+    border-radius: 5px;
+    
+}
+
+ul .drop-menu {
+    
+    position: absolute;
+    top: 100%;
+    left: 0%;
+    width: 100%;
+    padding: 0;
+    background-color: none ;
+        
+}
+
+ul .drop-menu li {
+    
+    background-color: #2C3D4F;
+  color: rgba(255, 255, 255, 0.7);
+    
+}
+
+ul .drop-menu li:hover {
+    
+    background: #ff7b51;
+    border-radius: 0px 0px 0px 0px;
+        
+}
+
+ul .drop-menu li:last-child {
+    
+    border-radius: 0px 0px 5px 5px;
+    
+}
+
+ul .drop-menu li {
+    
+    display: none;
+    
+}
+
+li:hover ul.drop-menu li {
+
+    display: block;
+
+}
+
+li:hover ul.drop-menu.menu1,
+li:hover ul.drop-menu.menu2,
+li:hover ul.drop-menu.menu3,
+li:hover ul.drop-menu.menu4 
+{
+    
+-wibkit-perspective: 1000px;
+perspective: 1000px;
+    
+}
+
+li:hover ul.drop-menu.menu1 li,
+li:hover ul.drop-menu.menu2 li,
+li:hover ul.drop-menu.menu3 li,
+li:hover ul.drop-menu.menu4 li
+{
+    
+opacity: 0;
+
+     
+}
+
+/* This Is Style 1 */
+
+li:hover ul.drop-menu.menu1 li:nth-child(1) {
+    
+    -wibkit-animation: m1 400ms ease-in-out;
+    animation: m1 400ms ease-in-out;
+    -wibkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;    
+    -wibkit-animation-delay: 0;
+    animation-delay: 0;
+  
+}
+
+li:hover ul.drop-menu.menu1 li:nth-child(2) {
+    
+    -wibkit-animation: m1 400ms ease-in-out;
+    animation: m1 400ms ease-in-out;
+    -wibkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -wibkit-animation-delay: 200ms;
+    animation-delay: 200ms;
+}
+
+li:hover ul.drop-menu.menu1 li:nth-child(3) {
+    
+    -wibkit-animation: m1 400ms ease-in-out;
+    animation: m1 400ms ease-in-out;
+    -wibkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -wibkit-animation-delay: 400ms;
+    animation-delay: 400ms;
+}
+
+li:hover ul.drop-menu.menu1 li:nth-child(4) {
+    
+    -wibkit-animation: m1 400ms ease-in-out;
+    animation: m1 400ms ease-in-out;
+    -wibkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -wibkit-animation-delay: 600ms;
+    animation-delay: 600ms;
+}
+
+li:hover ul.drop-menu.menu1 li:nth-child(5) {
+    
+    -wibkit-animation: m1 400ms ease-in-out;
+    animation: m1 400ms ease-in-out;
+    -wibkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -wibkit-animation-delay: 800ms;
+    animation-delay: 800ms;
+}
+
+li:hover ul.drop-menu.menu1 li:nth-child(6) {
+    
+    -wibkit-animation: m1 400ms ease-in-out;
+    animation: m1 400ms ease-in-out;
+    -wibkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -wibkit-animation-delay: 1000ms;
+    animation-delay: 1000ms;
+}
+
+
+@keyframes m1 {
+    
+    0% { 
+        opacity: 0;
+        -wibkit-transform: rotateY(-180deg) translateY(50px);
+        transform: rotateY(-180deg) translateY(50px)
+    }
+    
+    100% { 
+        
+        opacity: 1;
+        -wibkit-transform: rotateY(0deg) translateY(0px);
+        transform: rotateY(0deg) translateY(0px)
+    }
+}
+
